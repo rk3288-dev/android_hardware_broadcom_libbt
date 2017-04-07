@@ -178,6 +178,9 @@ typedef struct {
 
 void hw_config_cback(void *p_evt_buf);
 extern uint8_t vnd_local_bd_addr[BD_ADDR_LEN];
+#ifdef BT_ROCKCHIP
+int get_wifi_chip_type(char *type);
+#endif
 
 
 /******************************************************************************
@@ -377,6 +380,10 @@ uint8_t line_speed_to_userial_baud(uint32_t line_speed)
         baud = USERIAL_BAUD_3M;
     else if (line_speed == 2000000)
         baud = USERIAL_BAUD_2M;
+#ifdef BT_ROCKCHIP
+    else if (line_speed == 1500000)
+        baud = USERIAL_BAUD_1_5M;
+#endif
     else if (line_speed == 1000000)
         baud = USERIAL_BAUD_1M;
     else if (line_speed == 921600)
@@ -518,6 +525,42 @@ static uint8_t hw_config_findpatch(char *p_chip_id_str)
         ALOGI("FW patchfile: %s", p_chip_id_str);
         return TRUE;
     }
+
+#ifdef BT_ROCKCHIP
+    char bt_chip[64] = "";
+	get_wifi_chip_type(bt_chip);
+
+    ALOGI("BT module name is: %s, p_chip_id_str = %s\n", bt_chip, p_chip_id_str);
+    if (!strcmp(bt_chip, "AP6330") || !strcmp(bt_chip, "AP6493"))
+        sprintf(p_chip_id_str, "bcm40183b2");
+    else if (!strcmp(bt_chip, "AP6476"))
+        sprintf(p_chip_id_str, "bcm2076b1");
+    else if (!strcmp(bt_chip, "AP6441") || !strcmp(bt_chip, "AP6234"))
+        sprintf(p_chip_id_str, "bcm43341b0");
+    else if (!strcmp(bt_chip, "awnb108"))
+        sprintf(p_chip_id_str, "awnb108");
+
+    // auto recognize
+    if (!strcmp(p_chip_id_str, "BCM20702A"))
+    {
+        if (!strcmp(bt_chip, "AP6210_24M"))
+            sprintf(p_chip_id_str, "bcm20710a1_24M");
+        else
+            sprintf(p_chip_id_str, "bcm20710a1_26M");
+    }
+    else if (!strcmp(p_chip_id_str, "4343A0"))
+        sprintf(p_chip_id_str, "bcm43438a0");
+    else if (!strcmp(bt_chip, "ap6212"))
+        sprintf(p_chip_id_str, "bcm43438a0");
+    else if (!strcmp(p_chip_id_str, "BCM4335C0"))
+        sprintf(p_chip_id_str, "bcm4339a0");
+    else if (!strcmp(p_chip_id_str, "BCM4324B3"))
+        sprintf(p_chip_id_str, "bcm43241b4");
+    else if (!strcmp(p_chip_id_str, "BCM4350C0"))
+        sprintf(p_chip_id_str, "bcm4354a1");
+
+    ALOGI("Target HCD file name is: %s.hcd", p_chip_id_str);
+#endif
 
     if ((dirp = opendir(fw_patchfile_path)) != NULL)
     {

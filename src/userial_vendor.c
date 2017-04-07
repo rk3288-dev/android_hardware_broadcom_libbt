@@ -95,6 +95,10 @@ uint8_t userial_to_tcio_baud(uint8_t cfg_baud, uint32_t *baud)
         *baud = B3000000;
     else if (cfg_baud == USERIAL_BAUD_2M)
         *baud = B2000000;
+#ifdef BT_ROCKCHIP
+    else if (cfg_baud == USERIAL_BAUD_1_5M)
+        *baud = B1500000;
+#endif
     else if (cfg_baud == USERIAL_BAUD_1M)
         *baud = B1000000;
     else if (cfg_baud == USERIAL_BAUD_921600)

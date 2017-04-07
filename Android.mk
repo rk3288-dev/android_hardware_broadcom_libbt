@@ -59,6 +59,9 @@ ifeq ($(BCM_BLUETOOTH_MANTA_BUG), true)
     LOCAL_CFLAGS += -DMANTA_BUG
 endif
 
+LOCAL_CFLAGS += -DBT_ROCKCHIP
+LOCAL_SRC_FILES += src/rockchip.c
+
 include $(LOCAL_PATH)/vnd_buildcfg.mk
 
 include $(BUILD_SHARED_LIBRARY)
@@ -78,5 +81,7 @@ endif
 ifeq ($(TARGET_PRODUCT), gce_x86_phone)
     include $(LOCAL_PATH)/conf/google/gce_x86/Android.mk
 endif
+
+include $(LOCAL_PATH)/conf/rockchip/rk30sdk/Android.mk
 
 endif # BOARD_HAVE_BLUETOOTH_BCM
